@@ -1,106 +1,122 @@
 import React, { useState } from 'react'
-import { TextInput, View, StyleSheet, Button, Text, Alert } from 'react-native'
+import {
+  TextInput,
+  View,
+  StyleSheet,
+  Button,
+  Text,
+  Alert,
+} from 'react-native'
 
+export default function App() {
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
 
-function App() {
+  // 🔐 Password Strength
+  const isWeak = password.length > 0 && password.length < 6
+  const isMedium = password.length >= 6 && password.length < 10
+  const isStrong = password.length >= 10
 
-  const [text, setText] = useState('')
-  const [textNext, setTextNext] = useState('')
-  const min = text.length < 6
-  const minNext = textNext.length < 6
-  const med = text.length >= 6 && text.length < 10
-  const medNext = textNext.length >= 6 && textNext.length < 10
-  const max = text.length >= 10
-  const maxNext = textNext.length >= 10
+  // ✅ Match check
+  const isMatch =
+    password.length > 0 &&
+    confirmPassword.length > 0 &&
+    password === confirmPassword
 
-
-  const inputHandler = (e: any) => {
-    setText(e)
-    // console.log(e)
-  }
-
-  const confirmPassword = (e: any) => {
-    setTextNext(e)
-    // console.log(e)
-  }
+  // 🚀 Button condition
+  const canSubmit = isStrong && isMatch
 
   const submitHandler = () => {
-    Alert.alert('Password Match Perfectly')
+    Alert.alert('Password set successfully 🎉')
   }
 
-
   return (
-    <>
-      <View style={styles.container}>
-        <TextInput placeholder='Password' placeholderTextColor="gray" secureTextEntry={true} onChangeText={inputHandler} value={text} style={styles.mainInput} />
+    <View style={styles.container}>
+      <TextInput
+        placeholder="Password"
+        placeholderTextColor="gray"
+        secureTextEntry
+        style={styles.input}
+        value={password}
+        onChangeText={setPassword}
+      />
 
-        {text.length === 0 && textNext.length > 0 ? '' : text.length > 0 && textNext.length === 0 ? '' : text.length === 0 && textNext.length === 0 ? '' : text.length === textNext.length ? <Text style={styles.matchPassword}>✔️ Password Match</Text> : <Text style={styles.matchNOTPassword}>❌ Not Matched</Text>}
+      <TextInput
+        placeholder="Confirm Password"
+        placeholderTextColor="gray"
+        secureTextEntry
+        style={styles.input}
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+      />
 
-        <TextInput placeholder='Confirm Password' placeholderTextColor="gray" secureTextEntry={true} onChangeText={confirmPassword} value={textNext} style={styles.mainInput} />
+      {/* Match Message */}
+      {password.length > 0 && confirmPassword.length > 0 && (
+        <Text style={isMatch ? styles.match : styles.notMatch}>
+          {isMatch ? '✔ Password Match' : '❌ Password Not Match'}
+        </Text>
+      )}
 
-        {text.length === 0 && textNext.length === 0 ? '' : min && minNext ? <Text style={styles.min}>❌ Weak Password</Text> : med || medNext ? <Text style={styles.med}>⚠️ Medium Password</Text> : max || maxNext ? <Text style={styles.max}>✅ Strong Password</Text> : ""}
+      {/* Strength Message */}
+      {isWeak && <Text style={styles.weak}>❌ Weak Password</Text>}
+      {isMedium && <Text style={styles.medium}>⚠ Medium Password</Text>}
+      {isStrong && <Text style={styles.strong}>✅ Strong Password</Text>}
 
-        <Button onPress={submitHandler} disabled={text.length === textNext.length && text && textNext ? false : true} title='Submit' />
-
-      </View>
-    </>
+      <Button title="Submit" disabled={!canSubmit} onPress={submitHandler} />
+    </View>
   )
 }
-
-export default App
-
-
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: '#0f172a',
     justifyContent: 'center',
-    alignItems: 'center'
+    paddingHorizontal: 20,
   },
 
-  mainInput: {
-    color: 'white',
-    width: '80%',
+  input: {
+    backgroundColor: '#1e293b',
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: '#fff',
+    marginBottom: 12,
     borderWidth: 1,
-    borderColor: 'gray',
-    marginBottom: 20
+    borderColor: '#334155',
   },
 
-
-  min: {
-    color: 'red',
-    fontWeight: '800',
-    fontSize: 20,
-    marginVertical: 20
+  match: {
+    color: '#22c55e',
+    fontSize: 14,
+    marginBottom: 6,
+    fontWeight: '600',
   },
 
-  med: {
-    color: 'yellow',
-    fontWeight: '800',
-    fontSize: 20,
-    marginVertical: 20
+  notMatch: {
+    color: '#ef4444',
+    fontSize: 14,
+    marginBottom: 6,
+    fontWeight: '600',
   },
 
-  max: {
-    color: 'green',
-    fontWeight: '800',
-    fontSize: 20,
-    marginVertical: 20
+  weak: {
+    color: '#ef4444',
+    fontSize: 14,
+    marginBottom: 10,
   },
 
-
-  matchPassword: {
-    color: 'green',
-    fontWeight: '800',
-    fontSize: 15,
-    marginVertical: 20,
+  medium: {
+    color: '#facc15',
+    fontSize: 14,
+    marginBottom: 10,
   },
 
-  matchNOTPassword: {
-    color: 'red',
-    fontWeight: '800',
-    fontSize: 15,
-    marginVertical: 20,
-  }
+  strong: {
+    color: '#22c55e',
+    fontSize: 14,
+    marginBottom: 10,
+    fontWeight: '600',
+  },
 })
